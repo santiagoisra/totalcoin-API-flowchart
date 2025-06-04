@@ -475,3 +475,557 @@ document.addEventListener('click', (e) => {
         }
     }
 });
+
+// ===== FUNCIONALIDAD DE ANIMACIÓN DEL FLUJO DE DINERO =====
+
+class MoneyFlowAnimation {
+    constructor() {
+        this.isPlaying = false;
+        this.isPaused = false;
+        this.currentStep = 0;
+        this.currentFlow = 'cashin-auto';
+        this.animationSpeed = 1;
+        this.timelineInterval = null;
+        this.stepTimeout = null;
+        
+        this.flowSteps = {
+            'cashin-auto': [
+                { name: 'Autenticación', duration: 2000, description: 'Sistema se autentica con totalcoin' },
+                { name: 'Crear Pre-orden', duration: 1500, description: 'Se registra la intención de pago' },
+                { name: 'Usuario Paga', duration: 3000, description: 'Cliente realiza transferencia bancaria' },
+                { name: 'Conciliación', duration: 2500, description: 'totalcoin procesa y concilia automáticamente' },
+                { name: 'Notificación', duration: 1500, description: 'Webhook confirma el pago exitoso' }
+            ],
+            'cashin-qr': [
+                { name: 'Autenticación', duration: 2000, description: 'Sistema se autentica con totalcoin' },
+                { name: 'Crear QR', duration: 1500, description: 'Se genera código QR para el pago' },
+                { name: 'Escanear QR', duration: 2000, description: 'Usuario escanea con su app bancaria' },
+                { name: 'Procesar Pago', duration: 2500, description: 'totalcoin procesa el pago QR' },
+                { name: 'Confirmar', duration: 1500, description: 'Notificación de pago exitoso' }
+            ],
+            'webhook': [
+                { name: 'Configurar Webhook', duration: 1500, description: 'Cliente configura URL de notificación' },
+                { name: 'Recibir Pago', duration: 3000, description: 'totalcoin recibe pago del usuario' },
+                { name: 'Procesar', duration: 2000, description: 'Sistema valida y procesa el pago' },
+                { name: 'Enviar Webhook', duration: 1500, description: 'Notificación POST al cliente' },
+                { name: 'Confirmar', duration: 1000, description: 'Cliente responde HTTP 200' }
+            ],
+            'cashout': [
+                { name: 'Autenticación', duration: 2000, description: 'Sistema se autentica para pagos' },
+                { name: 'Solicitar Pago', duration: 1500, description: 'Se envía orden de transferencia' },
+                { name: 'Validar Datos', duration: 2000, description: 'totalcoin valida datos bancarios' },
+                { name: 'Transferir', duration: 3500, description: 'Procesamiento a través del sistema bancario' },
+                { name: 'Notificar Resultado', duration: 1500, description: 'Confirmación del estado final' }
+            ]
+        };
+        
+        this.init();
+    }
+    
+    init() {
+        this.setupEventListeners();
+        this.updateFlowSelector();
+        this.resetAnimation();
+    }
+    
+    setupEventListeners() {
+        // Botón para mostrar/ocultar la sección de animación
+        const animationBtn = document.getElementById('animation-btn');
+        if (animationBtn) {
+            animationBtn.addEventListener('click', () => {
+                this.toggleAnimationSection();
+            });
+        }
+        
+        // Controles de animación
+        const playBtn = document.getElementById('play-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const flowSelector = document.getElementById('flow-selector');
+        const speedSlider = document.getElementById('speed-slider');
+        
+        if (playBtn) playBtn.addEventListener('click', () => this.playAnimation());
+        if (pauseBtn) pauseBtn.addEventListener('click', () => this.pauseAnimation());
+        if (resetBtn) resetBtn.addEventListener('click', () => this.resetAnimation());
+        if (flowSelector) flowSelector.addEventListener('change', (e) => this.changeFlow(e.target.value));
+        if (speedSlider) speedSlider.addEventListener('input', (e) => this.changeSpeed(e.target.value));
+    }
+    
+    toggleAnimationSection() {
+        const animationSection = document.getElementById('animation-visualization');
+        // Verificar si está visible usando getComputedStyle para obtener el estado real
+        const computedStyle = window.getComputedStyle(animationSection);
+        const isVisible = computedStyle.display !== 'none';
+        
+        console.log(`Toggle animation - Estado actual: ${isVisible ? 'visible' : 'oculto'}`);
+        
+        if (isVisible) {
+            animationSection.style.display = 'none';
+            this.resetAnimation();
+            console.log('Ocultando sección de animación');
+        } else {
+            // Ocultar otros diagramas
+            document.querySelectorAll('.flow-diagram').forEach(diagram => {
+                diagram.classList.remove('active');
+            });
+            
+            // Mostrar sección de animación
+            animationSection.style.display = 'block';
+            this.resetAnimation();
+            console.log('Mostrando sección de animación');
+        }
+    }
+    
+    updateFlowSelector() {
+        const selector = document.getElementById('flow-selector');
+        if (selector) {
+            selector.innerHTML = `
+                <option value="cashin-auto">Cashin - Conciliación Automática</option>
+                <option value="cashin-qr">Cashin - Pre-órdenes con QR</option>
+                <option value="webhook">Notificaciones Webhook</option>
+                <option value="cashout">Cashout - Realizar Pagos</option>
+            `;
+            selector.value = this.currentFlow;
+        }
+    }
+    
+    changeFlow(flowType) {
+        this.currentFlow = flowType;
+        this.resetAnimation();
+        this.updateInfoSection();
+    }
+    
+    changeSpeed(speed) {
+        this.animationSpeed = parseFloat(speed);
+        const speedLabel = document.getElementById('speed-label');
+        if (speedLabel) {
+            speedLabel.textContent = `${speed}x`;
+        }
+    }
+    
+    playAnimation() {
+        if (this.isPaused) {
+            this.resumeAnimation();
+        } else {
+            this.startAnimation();
+        }
+    }
+    
+    startAnimation() {
+        if (this.isPlaying) return;
+        
+        this.isPlaying = true;
+        this.isPaused = false;
+        this.currentStep = 0;
+        
+        this.updateControls();
+        this.runAnimationStep();
+        this.startTimeline();
+    }
+    
+    resumeAnimation() {
+        if (!this.isPaused) return;
+        
+        this.isPaused = false;
+        this.updateControls();
+        this.runAnimationStep();
+        this.startTimeline();
+    }
+    
+    pauseAnimation() {
+        if (!this.isPlaying || this.isPaused) return;
+        
+        this.isPaused = true;
+        this.updateControls();
+        
+        if (this.stepTimeout) {
+            clearTimeout(this.stepTimeout);
+            this.stepTimeout = null;
+        }
+        
+        if (this.timelineInterval) {
+            clearInterval(this.timelineInterval);
+            this.timelineInterval = null;
+        }
+    }
+    
+    resetAnimation() {
+        this.isPlaying = false;
+        this.isPaused = false;
+        this.currentStep = 0;
+        
+        if (this.stepTimeout) {
+            clearTimeout(this.stepTimeout);
+            this.stepTimeout = null;
+        }
+        
+        if (this.timelineInterval) {
+            clearInterval(this.timelineInterval);
+            this.timelineInterval = null;
+        }
+        
+        this.updateControls();
+        this.resetVisualElements();
+        this.updateInfoSection();
+        this.resetTimeline();
+    }
+    
+    runAnimationStep() {
+        if (!this.isPlaying || this.isPaused) return;
+        
+        const steps = this.flowSteps[this.currentFlow];
+        if (this.currentStep >= steps.length) {
+            this.completeAnimation();
+            return;
+        }
+        
+        const step = steps[this.currentStep];
+        this.executeStep(step, this.currentStep);
+        
+        const duration = step.duration / this.animationSpeed;
+        this.stepTimeout = setTimeout(() => {
+            this.currentStep++;
+            this.runAnimationStep();
+        }, duration);
+    }
+    
+    executeStep(step, stepIndex) {
+        console.log(`Ejecutando paso ${stepIndex}: ${step.name}`);
+        
+        // Actualizar indicadores de proceso
+        this.updateProcessIndicators(stepIndex);
+        
+        // Animar flecha
+        this.animateArrow(stepIndex);
+        
+        // Mostrar notificación
+        this.showNotification(step.name, step.description);
+        
+        // Actualizar información
+        this.updateStepInfo(step, stepIndex);
+    }
+    
+    updateProcessIndicators(activeStep) {
+        const timelineSteps = document.querySelectorAll('.timeline-step');
+        console.log(`Actualizando timeline - Paso activo: ${activeStep}, Total pasos: ${timelineSteps.length}`);
+        
+        timelineSteps.forEach((step, index) => {
+            step.classList.remove('active', 'completed');
+            if (index < activeStep) {
+                step.classList.add('completed');
+                console.log(`Paso ${index} marcado como completado`);
+            } else if (index === activeStep) {
+                step.classList.add('active');
+                console.log(`Paso ${index} marcado como activo`);
+            }
+        });
+    }
+    
+    animateArrow(stepIndex) {
+        const arrowContainer = document.querySelector('.arrow-container');
+        const flowArrow = document.querySelector('.flow-arrow');
+        const processingSpinner = document.querySelector('.processing-spinner');
+        
+        if (!arrowContainer || !flowArrow) {
+            console.log('No se encontró el elemento .arrow-container o .flow-arrow');
+            return;
+        }
+        
+        console.log(`Animando flecha - Paso: ${stepIndex}, Flujo: ${this.currentFlow}`);
+        
+        // Remover clases anteriores
+        arrowContainer.classList.remove('move-to-totalcoin', 'move-to-user', 'move-from-user', 'move-to-bank', 'move-to-client', 'move-bank-to-user', 'processing', 'returning-to-center', 'move-totalcoin-to-client', 'move-totalcoin-to-bank', 'move-totalcoin-to-user');
+        flowArrow.classList.remove('active');
+        
+        // Resetear spinner
+        if (processingSpinner) {
+            processingSpinner.classList.remove('active');
+        }
+        
+        // Forzar un reflow para asegurar que las clases se remuevan
+        arrowContainer.offsetHeight;
+        
+        // Activar el elemento correspondiente
+        this.activateSystemElement(stepIndex);
+        
+        // Aplicar la animación directamente sin regreso al centro
+        this.applyStepAnimation(stepIndex, arrowContainer);
+    }
+    
+    applyStepAnimation(stepIndex, arrowContainer) {
+        // Forzar un reflow para asegurar que las clases se remuevan
+        arrowContainer.offsetHeight;
+        
+        const flowArrow = document.querySelector('.flow-arrow');
+        const processingSpinner = document.querySelector('.processing-spinner');
+        
+        // Agregar animación según el paso y flujo
+        let animationClass = '';
+        let isProcessingStep = false;
+        
+        switch (this.currentFlow) {
+            case 'cashin-auto':
+                if (stepIndex === 0) { // Autenticación: Cliente -> totalcoin
+                    animationClass = 'move-to-totalcoin';
+                } else if (stepIndex === 1) { // Crear Pre-orden: Cliente -> totalcoin
+                    animationClass = 'move-to-totalcoin';
+                } else if (stepIndex === 2) { // Usuario Paga: Usuario -> totalcoin
+                    animationClass = 'move-from-user';
+                } else if (stepIndex === 3) { // Conciliación: procesamiento en totalcoin
+                    isProcessingStep = true;
+                } else if (stepIndex === 4) { // Notificación: totalcoin -> Cliente
+                    animationClass = 'move-totalcoin-to-client';
+                }
+                break;
+            case 'cashin-qr':
+                if (stepIndex === 0) { // Autenticación: Cliente -> totalcoin
+                    animationClass = 'move-to-totalcoin';
+                } else if (stepIndex === 1) { // Crear QR: Cliente -> totalcoin
+                    animationClass = 'move-to-totalcoin';
+                } else if (stepIndex === 2) { // Escanear QR: Usuario -> totalcoin
+                    animationClass = 'move-from-user';
+                } else if (stepIndex === 3) { // Procesar Pago: procesamiento en totalcoin
+                    isProcessingStep = true;
+                } else if (stepIndex === 4) { // Confirmar: totalcoin -> Cliente
+                    animationClass = 'move-totalcoin-to-client';
+                }
+                break;
+            case 'webhook':
+                if (stepIndex === 0) { // Configurar Webhook: Cliente -> totalcoin
+                    animationClass = 'move-to-totalcoin';
+                } else if (stepIndex === 1) { // Recibir Pago: Usuario -> totalcoin
+                    animationClass = 'move-from-user';
+                } else if (stepIndex === 2) { // Procesar: procesamiento en totalcoin
+                    isProcessingStep = true;
+                } else if (stepIndex === 3) { // Enviar Webhook: totalcoin -> Cliente
+                    animationClass = 'move-totalcoin-to-client';
+                } else if (stepIndex === 4) { // Confirmar: Cliente responde a totalcoin
+                    animationClass = 'move-to-totalcoin';
+                }
+                break;
+            case 'cashout':
+                if (stepIndex === 0) { // Autenticación: Cliente -> totalcoin
+                    animationClass = 'move-to-totalcoin';
+                } else if (stepIndex === 1) { // Solicitar Pago: Cliente -> totalcoin
+                    animationClass = 'move-to-totalcoin';
+                } else if (stepIndex === 2) { // Validar Datos: procesamiento en totalcoin
+                    isProcessingStep = true;
+                } else if (stepIndex === 3) { // Transferir: totalcoin -> Banco -> Usuario
+                    animationClass = 'move-totalcoin-to-bank';
+                } else if (stepIndex === 4) { // Notificar Resultado: totalcoin -> Cliente
+                    animationClass = 'move-totalcoin-to-client';
+                }
+                break;
+        }
+        
+        if (isProcessingStep) {
+            // Mostrar spinner y ocultar flecha durante procesamiento
+            console.log(`Mostrando spinner para paso de procesamiento ${stepIndex}`);
+            if (flowArrow) {
+                flowArrow.classList.remove('active');
+            }
+            if (processingSpinner) {
+                processingSpinner.classList.add('active');
+            }
+        } else if (animationClass) {
+            // Mostrar flecha y ocultar spinner para otros pasos
+            console.log(`Aplicando clase: ${animationClass} para paso ${stepIndex}: ${this.flowSteps[this.currentFlow][stepIndex].name}`);
+            if (processingSpinner) {
+                processingSpinner.classList.remove('active');
+            }
+            if (flowArrow) {
+                flowArrow.classList.add('active');
+            }
+            arrowContainer.classList.add(animationClass);
+        }
+    }
+    
+    showNotification(title, description) {
+        const popup = document.getElementById('notification-popup');
+        if (!popup) return;
+        
+        popup.innerHTML = `
+            <div class="notification-content">
+                <h4>${title}</h4>
+                <p>${description}</p>
+            </div>
+        `;
+        
+        popup.classList.add('show');
+        
+        setTimeout(() => {
+            popup.classList.remove('show');
+        }, 2000 / this.animationSpeed);
+    }
+    
+    updateStepInfo(step, stepIndex) {
+        const infoSection = document.getElementById('animation-info');
+        if (!infoSection) return;
+        
+        const steps = this.flowSteps[this.currentFlow];
+        const progress = ((stepIndex + 1) / steps.length) * 100;
+        
+        infoSection.innerHTML = `
+            <h4>Paso ${stepIndex + 1} de ${steps.length}: ${step.name}</h4>
+            <p>${step.description}</p>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: ${progress}%"></div>
+            </div>
+            <small>Progreso: ${Math.round(progress)}%</small>
+        `;
+    }
+    
+    activateSystemElement(stepIndex) {
+        // Remover clase active de todos los elementos del sistema
+        document.querySelectorAll('.system-element').forEach(element => {
+            element.classList.remove('active');
+        });
+        
+        // Activar el elemento correspondiente según el flujo y paso
+        const elementMap = {
+            'cashin-auto': ['client', 'totalcoin', 'user', 'totalcoin', 'client'],
+            'cashin-qr': ['client', 'totalcoin', 'user', 'totalcoin', 'client'],
+            'webhook': ['user', 'totalcoin', 'client'],
+            'cashout': ['client', 'totalcoin', 'bank', 'user']
+        };
+        
+        const elements = elementMap[this.currentFlow];
+        if (elements && stepIndex < elements.length) {
+            const targetElement = document.querySelector(`.system-element[data-element="${elements[stepIndex]}"]`);
+            if (targetElement) {
+                targetElement.classList.add('active');
+            }
+        }
+    }
+    
+    startTimeline() {
+        const timeline = document.getElementById('timeline');
+        if (!timeline) return;
+        
+        const totalDuration = this.flowSteps[this.currentFlow].reduce((sum, step) => sum + step.duration, 0);
+        let elapsed = 0;
+        
+        this.timelineInterval = setInterval(() => {
+            if (this.isPaused) return;
+            
+            elapsed += 100;
+            const progress = (elapsed / totalDuration) * 100;
+            timeline.style.setProperty('--progress', `${Math.min(progress, 100)}%`);
+            
+            if (elapsed >= totalDuration) {
+                clearInterval(this.timelineInterval);
+                this.timelineInterval = null;
+            }
+        }, 100 / this.animationSpeed);
+    }
+    
+    resetTimeline() {
+        const timeline = document.getElementById('timeline');
+        if (timeline) {
+            timeline.style.setProperty('--progress', '0%');
+        }
+    }
+    
+    completeAnimation() {
+        this.isPlaying = false;
+        this.isPaused = false;
+        this.updateControls();
+        
+        // Mostrar notificación de completado
+        this.showNotification('¡Animación Completada!', 'El flujo de dinero ha sido procesado exitosamente.');
+        
+        // Resetear después de un momento
+        setTimeout(() => {
+            this.resetAnimation();
+        }, 3000);
+    }
+    
+    updateControls() {
+        const playBtn = document.getElementById('play-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        
+        if (playBtn) {
+            playBtn.disabled = this.isPlaying && !this.isPaused;
+            playBtn.textContent = this.isPaused ? '▶️ Reanudar' : '▶️ Reproducir';
+        }
+        
+        if (pauseBtn) {
+            pauseBtn.disabled = !this.isPlaying || this.isPaused;
+        }
+        
+        if (resetBtn) {
+            resetBtn.disabled = false;
+        }
+    }
+    
+    resetVisualElements() {
+        // Resetear flecha con animación suave
+        const arrowContainer = document.querySelector('.arrow-container');
+        const flowArrow = document.querySelector('.flow-arrow');
+        const processingSpinner = document.querySelector('.processing-spinner');
+        
+        if (arrowContainer) {
+            arrowContainer.classList.remove('move-to-totalcoin', 'move-to-user', 'move-from-user', 'move-to-bank', 'move-to-client', 'move-bank-to-user', 'processing', 'move-totalcoin-to-client', 'move-totalcoin-to-bank', 'move-totalcoin-to-user');
+            arrowContainer.classList.add('returning-to-center');
+            
+            // Remover la clase después de la animación
+            setTimeout(() => {
+                arrowContainer.classList.remove('returning-to-center');
+            }, 300);
+        }
+        
+        if (flowArrow) {
+            flowArrow.classList.remove('active');
+        }
+        
+        // Resetear spinner
+        if (processingSpinner) {
+            processingSpinner.classList.remove('active');
+        }
+        
+        // Resetear elementos del sistema
+        document.querySelectorAll('.system-element').forEach(element => {
+            element.classList.remove('active');
+        });
+        
+        // Resetear indicadores
+        document.querySelectorAll('.timeline-step').forEach(step => {
+            step.classList.remove('active', 'completed');
+        });
+        console.log('Timeline reseteado');
+        
+        // Ocultar notificaciones
+        const popup = document.getElementById('notification-popup');
+        if (popup) {
+            popup.classList.remove('show');
+        }
+    }
+    
+    updateInfoSection() {
+        const infoSection = document.getElementById('animation-info');
+        if (!infoSection) return;
+        
+        const flowInfo = integrationInfo[this.currentFlow];
+        const steps = this.flowSteps[this.currentFlow];
+        
+        infoSection.innerHTML = `
+            <h4>${flowInfo.title}</h4>
+            <p>${flowInfo.description}</p>
+            <div class="steps-preview">
+                <h5>Pasos del proceso:</h5>
+                <ol>
+                    ${steps.map(step => `<li>${step.name}</li>`).join('')}
+                </ol>
+            </div>
+        `;
+    }
+}
+
+// Inicializar la animación cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+    // Esperar un poco para asegurar que otros elementos estén inicializados
+    setTimeout(() => {
+        window.moneyFlowAnimation = new MoneyFlowAnimation();
+    }, 500);
+});

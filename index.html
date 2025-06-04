@@ -29,6 +29,14 @@
                 <button class="integration-btn" data-flow="cashout">Cashout - Realizar Pagos</button>
             </div>
             
+            <div class="animation-section">
+                <h4>🎬 Visualización Animada</h4>
+                <button class="animation-btn" id="animation-btn">
+                    <span class="btn-text">Ver Flujo del Dinero</span>
+                    <span class="btn-subtitle">Animación interactiva</span>
+                </button>
+            </div>
+            
             <div class="info-panel">
                 <h4>Información</h4>
                 <div id="flow-info">
@@ -321,6 +329,105 @@
                                 <h4>Notificación de Resultado</h4>
                                 <p><strong>totalcoin</strong> te confirma que el pago se realizó</p>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sección de Animación del Flujo del Dinero -->
+                <div id="animation-visualization" class="animation-container">
+                    <h2>💰 Flujo del Dinero - Visualización Animada</h2>
+                    <div class="animation-controls">
+                        <button class="control-btn" id="play-btn">▶️ Reproducir</button>
+                        <button class="control-btn" id="pause-btn">⏸️ Pausar</button>
+                        <button class="control-btn" id="reset-btn">🔄 Reiniciar</button>
+                        <select class="flow-selector" id="flow-selector">
+                            <option value="cashin-auto">Cashin - Conciliación Automática</option>
+                            <option value="cashin-qr">Cashin - Pre-órdenes con QR</option>
+                            <option value="webhook">Notificaciones Webhook</option>
+                            <option value="cashout">Cashout - Realizar Pagos</option>
+                        </select>
+                        <div class="speed-control">
+                            <label for="speed-slider" id="speed-label">Velocidad: 1x</label>
+                            <input type="range" id="speed-slider" min="0.25" max="1.5" step="0.25" value="1">
+                        </div>
+                    </div>
+                    
+                    <div class="animation-stage" id="animation-stage">
+                        <!-- Elementos del sistema -->
+                        <div class="system-element client-system" id="client-system" data-element="client">
+                            <div class="element-icon">🏢</div>
+                            <div class="element-label">Tu Sistema</div>
+                        </div>
+                        
+                        <div class="system-element totalcoin-system" id="totalcoin-system" data-element="totalcoin">
+                            <div class="element-icon">🏦</div>
+                            <div class="element-label">totalcoin</div>
+                        </div>
+                        
+                        <div class="system-element user-system" id="user-system" data-element="user">
+                            <div class="element-icon">👤</div>
+                            <div class="element-label">Usuario Final</div>
+                        </div>
+                        
+                        <div class="system-element bank-system" id="bank-system" data-element="bank">
+                            <div class="element-icon">🏛️</div>
+                            <div class="element-label">Sistema Bancario</div>
+                        </div>
+                        
+                        <!-- Contenedor de flecha animada -->
+                        <div class="arrow-container" id="arrow-container">
+                            <div class="flow-arrow">
+                                <div class="arrow-line"></div>
+                                <div class="arrow-head"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Spinner para procesamiento -->
+                        <div class="processing-spinner" id="processing-spinner">
+                            <div class="spinner-circle"></div>
+                            <div class="spinner-text">Procesando...</div>
+                        </div>
+                        
+                        <!-- Indicadores de proceso -->
+                        <div class="process-indicator" id="process-indicator">
+                            <div class="indicator-text">Procesando...</div>
+                            <div class="loading-spinner"></div>
+                        </div>
+                        
+                        <!-- Notificaciones animadas -->
+                        <div class="notification-popup" id="notification-popup">
+                            <div class="notification-icon">📧</div>
+                            <div class="notification-text">Notificación enviada</div>
+                        </div>
+                    </div>
+                    
+                    <div class="animation-timeline" id="timeline">
+                        <div class="timeline-step" data-step="1">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-label">Autenticación</div>
+                        </div>
+                        <div class="timeline-step" data-step="2">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-label">Crear Pre-orden</div>
+                        </div>
+                        <div class="timeline-step" data-step="3">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-label">Pago Usuario</div>
+                        </div>
+                        <div class="timeline-step" data-step="4">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-label">Procesamiento</div>
+                        </div>
+                        <div class="timeline-step" data-step="5">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-label">Notificación</div>
+                        </div>
+                    </div>
+                    
+                    <div class="animation-info" id="animation-info">
+                        <h4>Información del Paso Actual</h4>
+                        <div class="current-step-info" id="current-step-info">
+                            <p>Selecciona un flujo y presiona reproducir para ver la animación del movimiento del dinero.</p>
                         </div>
                     </div>
                 </div>

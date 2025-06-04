@@ -211,6 +211,7 @@ body {
     height: 100%;
     background: linear-gradient(90deg, transparent, rgba(243, 125, 61, 0.1), transparent);
     transition: left 0.5s ease;
+    pointer-events: none;
 }
 
 .step:hover {
@@ -254,7 +255,7 @@ body {
 
 .step-number {
     position: absolute;
-    top: -10px;
+    top: -8px;
     left: 20px;
     background: linear-gradient(135deg, #F37D3D 0%, #ff6b35 100%);
     color: white;
@@ -267,6 +268,8 @@ body {
     font-weight: bold;
     font-size: 1.1rem;
     box-shadow: 0 4px 10px rgba(243, 125, 61, 0.3);
+    z-index: 10;
+    pointer-events: none;
 }
 
 .step-content {
@@ -478,4 +481,738 @@ body {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* ===== ESTILOS PARA LA SECCIÓN DE ANIMACIÓN ===== */
+
+/* Botón de animación en sidebar */
+.animation-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #e9ecef;
+}
+
+.animation-section h4 {
+    color: #003E70;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.animation-btn {
+    width: 100%;
+    background: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #495057;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.animation-btn:hover {
+    background: #e9ecef;
+    border-color: #F37D3D;
+    color: #F37D3D;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-icon {
+    font-size: 1.5rem;
+    animation: bounce 2s infinite;
+}
+
+.btn-text {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.btn-subtitle {
+    font-size: 0.75rem;
+    opacity: 0.9;
+}
+
+/* Contenedor principal de animación */
+.animation-container {
+    display: none;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 15px;
+    margin-top: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.animation-container.active {
+    display: block;
+    animation: slideInUp 0.5s ease;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animation-container h2 {
+    color: #003E70;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+/* Controles de animación */
+.animation-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.control-btn {
+    background: linear-gradient(135deg, #003E70 0%, #0056a3 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.7rem 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.control-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 62, 112, 0.3);
+}
+
+.control-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.flow-selector {
+    background: white;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 0.7rem 1rem;
+    font-size: 0.9rem;
+    color: #495057;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.flow-selector:focus {
+    outline: none;
+    border-color: #F37D3D;
+}
+
+/* Escenario de animación */
+.animation-stage {
+    position: relative;
+    height: 400px;
+    background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+    border: 2px solid #e1e5e9;
+}
+
+/* Elementos del sistema */
+.system-element {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.system-element.active {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(243, 125, 61, 0.3);
+    border: 3px solid #F37D3D;
+}
+
+/* Posiciones corregidas para mejor mapeo con animaciones */
+.client-system {
+    top: 50px;
+    left: 50px;
+    /* Posición: -200px, -150px desde el centro */
+}
+
+.totalcoin-system {
+    top: 50px;
+    right: 50px;
+    /* Posición: +200px, -150px desde el centro */
+}
+
+.user-system {
+    bottom: 50px;
+    left: 50px;
+    /* Posición: -200px, +100px desde el centro */
+}
+
+.bank-system {
+    bottom: 50px;
+    right: 50px;
+    /* Posición: +200px, +100px desde el centro */
+}
+
+.element-icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.2rem;
+}
+
+.element-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #495057;
+    text-align: center;
+}
+
+/* Contenedor de flecha animada */
+.arrow-container {
+    position: absolute;
+    opacity: 0;
+    z-index: 20;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+/* Spinner para procesamiento */
+.processing-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    z-index: 25;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    transition: opacity 0.3s ease;
+}
+
+.processing-spinner.active {
+    opacity: 1;
+}
+
+.spinner-circle {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e3f2fd;
+    border-top: 4px solid #F37D3D;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.spinner-text {
+    font-size: 0.8rem;
+    color: #003E70;
+    font-weight: 600;
+    text-align: center;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.flow-arrow {
+    width: 100%;
+    height: 6px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.arrow-line {
+    width: calc(100% - 20px);
+    height: 6px;
+    background: linear-gradient(90deg, #F37D3D, #003E70);
+    border-radius: 3px;
+    position: relative;
+    box-shadow: 0 3px 12px rgba(243, 125, 61, 0.4);
+}
+
+.arrow-head {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 20px solid #003E70;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    filter: drop-shadow(0 3px 6px rgba(0, 62, 112, 0.4));
+}
+
+/* Animación de pulso para la flecha */
+@keyframes arrowPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+}
+
+.flow-arrow.active {
+    animation: arrowPulse 1.5s ease-in-out infinite;
+}
+
+/* Animaciones de movimiento de flechas */
+/* Flechas direccionales animadas */
+
+/* Cliente (Tu Sistema) -> totalcoin (horizontal superior) */
+.arrow-container.move-to-totalcoin {
+    top: 90px;
+    left: 130px;
+    width: calc(100% - 260px);
+    transform: rotate(0deg);
+    opacity: 1;
+    animation: fadeInArrow 0.8s ease-in-out;
+}
+
+/* totalcoin -> Cliente (Tu Sistema) (horizontal superior, dirección opuesta) */
+.arrow-container.move-totalcoin-to-client {
+    top: 90px;
+    left: 130px;
+    width: calc(100% - 260px);
+    transform: rotate(180deg);
+    opacity: 1;
+    animation: fadeInArrow 0.8s ease-in-out;
+}
+
+/* Usuario Final -> totalcoin (diagonal desde inferior izquierda a superior derecha) */
+.arrow-container.move-from-user {
+    bottom: 90px;
+    left: 130px;
+    width: calc(100% - 180px);
+    transform: rotate(-23deg);
+    transform-origin: left center;
+    opacity: 1;
+    animation: fadeInArrow 0.8s ease-in-out;
+}
+
+/* totalcoin -> Usuario Final (diagonal desde superior derecha a inferior izquierda) */
+.arrow-container.move-totalcoin-to-user {
+    top: 130px;
+    right: 130px;
+    width: calc(100% - 180px);
+    transform: rotate(135deg);
+    transform-origin: right center;
+    opacity: 1;
+    animation: fadeInArrow 0.8s ease-in-out;
+}
+
+/* Cliente (Tu Sistema) -> Banco (diagonal desde superior izquierda a inferior derecha) */
+.arrow-container.move-to-bank {
+    top: 90px;
+    left: 90px;
+    width: calc(100% - 180px);
+    transform: rotate(45deg);
+    transform-origin: left center;
+    opacity: 1;
+    animation: fadeInArrow 0.8s ease-in-out;
+}
+
+/* Banco -> Usuario Final (horizontal inferior, de derecha a izquierda) */
+.arrow-container.move-bank-to-user {
+    bottom: 90px;
+    left: 130px;
+    width: calc(100% - 260px);
+    transform: rotate(180deg);
+    opacity: 1;
+    animation: fadeInArrow 0.8s ease-in-out;
+}
+
+/* totalcoin -> Banco (vertical desde superior derecha a inferior derecha) */
+.arrow-container.move-totalcoin-to-bank {
+    top: 200px;
+    right: 20px;
+    width: 150px;
+    transform: rotate(90deg);
+    transform-origin: center top;
+    opacity: 1;
+    animation: fadeInArrow 0.8s ease-in-out;
+}
+
+.arrow-container.returning-to-center {
+    opacity: 0;
+    animation: fadeOutArrow 0.3s ease-in-out;
+}
+
+/* Keyframes para animaciones de flechas */
+@keyframes fadeInArrow {
+    0% {
+        opacity: 0;
+        transform: scaleX(0);
+    }
+    30% {
+        opacity: 0.6;
+        transform: scaleX(0.3);
+    }
+    70% {
+        opacity: 0.9;
+        transform: scaleX(0.7);
+    }
+    100% {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+}
+
+@keyframes fadeOutArrow {
+    0% {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scaleX(0.5);
+    }
+    100% {
+        opacity: 0;
+        transform: scaleX(0);
+    }
+}
+
+/* Todas las animaciones obsoletas han sido eliminadas */
+
+@keyframes moveBankToUser {
+    0% {
+        transform: translate(150px, 120px) scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    30% {
+        transform: translate(100px, 120px) scale(1.1) rotate(-5deg);
+        opacity: 0.9;
+    }
+    60% {
+        transform: translate(0px, 120px) scale(0.9) rotate(3deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-150px, 120px) scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+@keyframes returnToCenter {
+    0% {
+        transform: var(--current-transform, translate(0, 0));
+        opacity: 0.8;
+    }
+    50% {
+        transform: translate(0, -20px) scale(1.05);
+        opacity: 0.9;
+    }
+    100% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+    }
+}
+
+/* Indicador de proceso */
+.process-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    display: none;
+    align-items: center;
+    gap: 0.8rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 30;
+}
+
+.process-indicator.active {
+    display: flex;
+    animation: fadeInScale 0.3s ease;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+.indicator-text {
+    font-weight: 600;
+    color: #003E70;
+}
+
+.loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #F37D3D;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Notificación popup */
+.notification-popup {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+    color: white;
+    border-radius: 10px;
+    padding: 0.8rem 1.2rem;
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    z-index: 30;
+}
+
+.notification-popup.active {
+    display: flex;
+    animation: slideInRight 0.5s ease;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.notification-icon {
+    font-size: 1.2rem;
+}
+
+.notification-text {
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+/* Timeline de animación */
+.animation-timeline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.timeline-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    position: relative;
+}
+
+.timeline-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 15px;
+    right: -50%;
+    width: 100%;
+    height: 2px;
+    background: #dee2e6;
+    z-index: 1;
+}
+
+.timeline-step.active:not(:last-child)::after {
+    background: linear-gradient(90deg, #F37D3D 0%, #ff6b35 100%);
+    animation: progressLine 0.5s ease;
+}
+
+@keyframes progressLine {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+.timeline-dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #dee2e6;
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    z-index: 2;
+    position: relative;
+}
+
+.timeline-step.active .timeline-dot {
+    background: linear-gradient(135deg, #F37D3D 0%, #ff6b35 100%);
+    transform: scale(1.2);
+    box-shadow: 0 4px 15px rgba(243, 125, 61, 0.4);
+}
+
+.timeline-step.completed .timeline-dot {
+    background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+}
+
+.timeline-label {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #666;
+    text-align: center;
+}
+
+.timeline-step.active .timeline-label {
+    color: #F37D3D;
+    font-weight: 600;
+}
+
+/* Información de animación */
+.animation-info {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.animation-info h4 {
+    color: #003E70;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.current-step-info {
+    color: #666;
+    line-height: 1.6;
+}
+
+.current-step-info p {
+    margin-bottom: 0.5rem;
+}
+
+.current-step-info .step-title {
+    color: #F37D3D;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.current-step-info .step-description {
+    margin-bottom: 1rem;
+}
+
+.current-step-info .step-technical {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    border-left: 4px solid #F37D3D;
+    font-family: monospace;
+    font-size: 0.85rem;
+}
+
+/* Efectos especiales */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(243, 125, 61, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(243, 125, 61, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(243, 125, 61, 0);
+    }
+}
+
+.system-element.pulse {
+    animation: pulse 2s infinite;
+}
+
+/* Responsive para animaciones */
+@media (max-width: 768px) {
+    .animation-stage {
+        height: 300px;
+    }
+    
+    .system-element {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .element-icon {
+        font-size: 1.4rem;
+    }
+    
+    .element-label {
+        font-size: 0.6rem;
+    }
+    
+    .animation-controls {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+    
+    .timeline-step {
+        flex-direction: column;
+    }
+    
+    .timeline-label {
+        font-size: 0.7rem;
+    }
+    
+    .money-bill {
+        font-size: 1.5rem;
+    }
 }

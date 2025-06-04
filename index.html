@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>totalcoin API Flowchart - Flujograma Interactivo</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="images/Logo Completo Slogan nuevo.svg" alt="totalcoin Logo" class="logo">
+            </div>
+            <div class="nav-title">
+                <h1><strong>totalcoin</strong> API Integration Flowchart</h1>
+                <p>Flujograma Interactivo de Integraciones</p>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>Tipos de Integración</h3>
+            <div class="integration-buttons">
+                <button class="integration-btn active" data-flow="cashin-auto">Cashin - Conciliación Automática</button>
+                <button class="integration-btn" data-flow="cashin-qr">Cashin - Pre-órdenes con QR</button>
+                <button class="integration-btn" data-flow="webhook">Notificaciones Webhook</button>
+                <button class="integration-btn" data-flow="cashout">Cashout - Realizar Pagos</button>
+            </div>
+            
+            <div class="info-panel">
+                <h4>Información</h4>
+                <div id="flow-info">
+                    <p>Selecciona un tipo de integración para ver el flujo detallado.</p>
+                </div>
+                <div class="documentation-links">
+                    <h5>Documentación Técnica</h5>
+                    <a href="https://apidocs.totalcoin.com/integrations/pre_orders/es/index.html" target="_blank" class="doc-link" id="doc-cashin-automatic">📄 Conciliación Automática</a>
+                    <a href="https://apidocs.totalcoin.com/integrations/pre_orders_qr/es/index.html" target="_blank" class="doc-link" id="doc-cashin-qr">📄 Pre-órdenes con QR</a>
+                    <a href="https://apidocs.totalcoin.com/integrations/without_pre_order/es/index.html" target="_blank" class="doc-link" id="doc-webhook">📄 Notificaciones Webhook</a>
+                    <a href="https://apidocs.totalcoin.com/integrations/payments/es/index.html" target="_blank" class="doc-link" id="doc-cashout">📄 Realizar Pagos</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="flowchart-container">
+                <!-- Cashin - Conciliación Automática -->
+                <div id="cashin-auto" class="flow-diagram active">
+                    <h2>Cashin - Conciliación Automática</h2>
+                    <div class="flow-steps">
+                        <div class="step" data-step="1">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Autenticación</h4>
+                                <p>Inicias sesión con tu usuario y contraseña</p>
+                                <div class="step-details">
+                                    <code>POST /api/auth/login
+{"username": "", "password": ""}</code>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow">↓</div>
+                        
+                        <div class="step" data-step="2">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Crear Pre-Orden</h4>
+                                <p>Le informas a <strong>totalcoin</strong> que vas a recibir un pago</p>
+                                <div class="step-details">
+                                    <code>POST /api/conciliacionAutomaticaV2/cashRequest
+{
+  "OperationId": "string",
+  "Amount": 0,
+  "DNI": "string",
+  "CompanyReferenceToConciliate": ""
+}</code>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow">↓</div>
+                        
+                        <div class="step" data-step="3">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Usuario Realiza Pago</h4>
+                                <p>Tu cliente paga con transferencia, QR o tarjeta</p>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow">↓</div>
+                        
+                        <div class="step" data-step="4">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Conciliación Automática</h4>
+                                <p><strong>totalcoin</strong> encuentra y confirma el pago automáticamente</p>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow">↓</div>
+                        
+                        <div class="step" data-step="5">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h4>Notificación Webhook</h4>
+                                <p><strong>totalcoin</strong> te avisa que el pago llegó</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cashin - Pre-órdenes con QR -->
+                <div id="cashin-qr" class="flow-diagram">
+                    <h2>Cashin - Pre-órdenes con QR</h2>
+                    <div class="flow-steps">
+                        <div class="step" data-step="1">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Autenticación</h4>
+                                <p>Inicias sesión con tu usuario y contraseña</p>
+                                <div class="step-details">
+                                    <code>POST /api/auth/login
+{"username": "", "password": ""}</code>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow">↓</div>
+                        
+                        <div class="step" data-step="2">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Crear Pre-Orden con QR</h4>
+                                <p>Creas un pedido y <strong>totalcoin</strong> genera un código QR</p>
+                                <div class="step-details">
+                                    <code>POST /api/iep/pre-order
+{
+  "concept": "test-jpgq",
+  "expirationDate": "2025-03-26T17:23:14.099Z",
+  "businessUnit": 348,
+  "externalReference": "JPGQ_PAYMENT_001",
+  "qrAmountType": "closed",
+  "amount": 10,
+  "qrType": "static",
+  "resetOnPayment": true,
+  "operationId": "ca8964d1-b90b-4583-98da-bfc7f757d6e7",
+  "dni": "27594189",
+  "companyReferenceToConciliate": "OP:000001110001"
+}</code>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow">↓</div>
+                        
+                        <div class="step" data-step="3">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Generar Código QR</h4>
+                                <p><strong>totalcoin</strong> crea automáticamente el código QR</p>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow">↓</div>
+                        
+                        <div class="step" data-step="4">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Usuario Escanea QR</h4>
+                                <p>Tu cliente escanea el QR y paga desde su celular</p>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow">↓</div>
+                        
+                        <div class="step" data-step="5">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h4>Procesamiento y Notificación</h4>
+                                <p><strong>totalcoin</strong> procesa el pago y te avisa</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notificaciones Webhook -->
+                <div id="webhook" class="flow-diagram">
+                    <h2>Notificaciones Webhook</h2>
+                    <div class="flow-steps">
+                        <div class="step" data-step="1">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Configurar Webhook</h4>
+                                <p>Le informas a <strong>totalcoin</strong> dónde enviarte las notificaciones</p>
+                                <div class="step-details">
+                                    <code>POST /api/webhooks/configure
+{
+  "url": "https://tu-servidor.com/webhook",
+  "events": ["payment.completed", "payment.failed"]
+}</code>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow">↓</div>
+                        
+                        <div class="step" data-step="2">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Evento de Pago</h4>
+                                <p>Sucede algo importante (pago exitoso o fallido)</p>
+                                <div class="step-details">
+                                    <p>Canales: Transferencia bancaria, QR, Tarjeta</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow">↓</div>
+                        
+                        <div class="step" data-step="3">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4><strong>totalcoin</strong> Envía Webhook</h4>
+                                <p><strong>totalcoin</strong> te manda automáticamente la información</p>
+                                <div class="step-details">
+                                    <code>POST a tu endpoint configurado
+{
+  "Concepto": "1234567890",
+  "Referencia": "0000004053",
+  "Monto": 1000,
+  "MontoNeto": 937.2,
+  "Estado": "APROBADO",
+  "MetodoPago": "TARJETA",
+  "FechaCreacion": "11/19/2020 16:40:20"
+}</code>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow">↓</div>
+                        
+                        <div class="step" data-step="4">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Tu Sistema Responde</h4>
+                                <p>Tu servidor confirma que recibió la notificación</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cashout - Realizar Pagos -->
+                <div id="cashout" class="flow-diagram">
+                    <h2>Cashout - Realizar Pagos</h2>
+                    <div class="flow-steps">
+                        <div class="step" data-step="1">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Autenticación</h4>
+                                <p>Inicias sesión con tu usuario y contraseña</p>
+                                <div class="step-details">
+                                    <code>POST /api/auth/login
+{"username": "", "password": ""}</code>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow">↓</div>
+                        
+                        <div class="step" data-step="2">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Realizar Pago</h4>
+                                <p>Le pedís a <strong>totalcoin</strong> que haga un pago</p>
+                                <div class="step-details">
+                                    <code>POST /api/payments/transactions
+{
+  "alias": "",
+  "cbucvu": "",
+  "cuitcuil": "",
+  "amount": 0,
+  "reference": "",
+  "notificationUrl": ""
+}</code>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow">↓</div>
+                        
+                        <div class="step" data-step="3">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Procesamiento</h4>
+                                <p><strong>totalcoin</strong> revisa que todo esté bien y procesa</p>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow">↓</div>
+                        
+                        <div class="step" data-step="4">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Respuesta</h4>
+                                <p><strong>totalcoin</strong> envía el dinero al destinatario</p>
+                                <div class="step-details">
+                                    <code>{"id": "transaction_id"}</code>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow">↓</div>
+                        
+                        <div class="step" data-step="5">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h4>Notificación de Resultado</h4>
+                                <p><strong>totalcoin</strong> te confirma que el pago se realizó</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="step-modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

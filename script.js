@@ -340,19 +340,23 @@ class FlowchartManager {
     }
 
     updateInfoPanel() {
-        const info = integrationInfo[this.currentFlow];
+        const language = window.languageManager ? window.languageManager.currentLanguage : 'es';
+        const info = integrationInfoTranslations[language][this.currentFlow];
         const infoPanel = document.getElementById('flow-info');
+        
+        const featuresTitle = language === 'en' ? 'Features:' : 'Características:';
+        const endpointsTitle = language === 'en' ? 'Main endpoints:' : 'Endpoints principales:';
         
         infoPanel.innerHTML = `
             <h5 style="color: #003E70; margin-bottom: 1rem; font-weight: 600;">${info.title}</h5>
             <p style="margin-bottom: 1rem; line-height: 1.6;">${info.description}</p>
             
-            <h6 style="color: #F37D3D; margin-bottom: 0.5rem; font-weight: 600;">Características:</h6>
+            <h6 style="color: #F37D3D; margin-bottom: 0.5rem; font-weight: 600;">${featuresTitle}</h6>
             <ul style="margin-bottom: 1rem; padding-left: 1.2rem;">
                 ${info.features.map(feature => `<li style="margin-bottom: 0.3rem; color: #666;">${feature}</li>`).join('')}
             </ul>
             
-            <h6 style="color: #F37D3D; margin-bottom: 0.5rem; font-weight: 600;">Endpoints principales:</h6>
+            <h6 style="color: #F37D3D; margin-bottom: 0.5rem; font-weight: 600;">${endpointsTitle}</h6>
             <ul style="padding-left: 1.2rem;">
                 ${info.endpoints.map(endpoint => `<li style="margin-bottom: 0.3rem; color: #666; font-family: monospace; font-size: 0.85rem;">${endpoint}</li>`).join('')}
             </ul>
@@ -449,7 +453,7 @@ function updateDocumentationLinks(flowType) {
 
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
-    new FlowchartManager();
+    window.flowchartManager = new FlowchartManager();
     
     // Agregar efecto de carga suave
     document.body.style.opacity = '0';
@@ -1022,8 +1026,554 @@ class MoneyFlowAnimation {
     }
 }
 
-// Inicializar la animación cuando el DOM esté listo
+// Sistema de traducción
+const translations = {
+    es: {
+        // Navbar
+        'API Integration Flowchart': 'API Integration Flowchart',
+        'Flujograma Interactivo de Integraciones': 'Flujograma Interactivo de Integraciones',
+        
+        // Sidebar
+        'Tipos de Integración': 'Tipos de Integración',
+        'Información': 'Información',
+        'Selecciona un tipo de integración para ver el flujo detallado.': 'Selecciona un tipo de integración para ver el flujo detallado.',
+        
+        // Animation section
+        '🎬 Visualización Animada': '🎬 Visualización Animada',
+        'Ver Flujo del Dinero': 'Ver Flujo del Dinero',
+        
+        // Documentation
+        'Documentación Técnica': 'Documentación Técnica',
+        '📄 Conciliación Automática': '📄 Conciliación Automática',
+        '📄 Pre-órdenes con QR': '📄 Pre-órdenes con QR',
+        '📄 Notificaciones Webhook': '📄 Notificaciones Webhook',
+        '📄 Realizar Pagos': '📄 Realizar Pagos',
+        
+        // Botones principales
+        'Ver Documentación Completa': 'Ver Documentación Completa',
+        'Animación interactiva': 'Animación interactiva',
+        
+        // Títulos de flujos
+        'Cashin - Conciliación Automática': 'Cashin - Conciliación Automática',
+        'Cashin - Pre-órdenes con QR': 'Cashin - Pre-órdenes con QR',
+        'Notificaciones Webhook': 'Notificaciones Webhook',
+        'Cashout - Realizar Pagos': 'Cashout - Realizar Pagos',
+        
+        // Controles de animación
+        'Flujo del Dinero - Visualización Animada': 'Flujo del Dinero - Visualización Animada',
+        'Selecciona un flujo:': 'Selecciona un flujo:',
+        'Velocidad:': 'Velocidad:',
+        '▶️ Reproducir': '▶️ Reproducir',
+        '⏸️ Pausar': '⏸️ Pausar',
+        '🔄 Reiniciar': '🔄 Reiniciar',
+        '▶️ Reanudar': '▶️ Reanudar',
+        
+        // Elementos del sistema
+        'Tu Sistema': 'Tu Sistema',
+        'totalcoin': 'totalcoin',
+        'Usuario Final': 'Usuario Final',
+        'Sistema Bancario': 'Sistema Bancario',
+        
+        // Timeline
+        'Autenticación': 'Autenticación',
+        'Crear Pre-orden': 'Crear Pre-orden',
+        'Pago Usuario': 'Pago Usuario',
+        'Procesamiento': 'Procesamiento',
+        'Notificación': 'Notificación',
+        
+        // Información de pasos
+        'Información del Paso Actual': 'Información del Paso Actual',
+        'Selecciona un flujo y presiona reproducir para ver la animación del movimiento del dinero.': 'Selecciona un flujo y presiona reproducir para ver la animación del movimiento del dinero.',
+        
+        // Notificaciones
+        'Notificación enviada': 'Notificación enviada',
+        'Procesando...': 'Procesando...',
+        '¡Animación Completada!': '¡Animación Completada!',
+        'El flujo de dinero ha sido procesado exitosamente.': 'El flujo de dinero ha sido procesado exitosamente.',
+        
+        // Pasos de diagramas de flujo
+        'Inicias sesión con tu usuario y contraseña': 'Inicias sesión con tu usuario y contraseña',
+        'Crear Pre-Orden': 'Crear Pre-Orden',
+        'Le informas a totalcoin que vas a recibir un pago': 'Le informas a totalcoin que vas a recibir un pago',
+        'Usuario Realiza Pago': 'Usuario Realiza Pago',
+        'Tu cliente paga con transferencia, QR o tarjeta': 'Tu cliente paga con transferencia, QR o tarjeta',
+        'Conciliación Automática': 'Conciliación Automática',
+        'totalcoin encuentra y confirma el pago automáticamente': 'totalcoin encuentra y confirma el pago automáticamente',
+        'Notificación Webhook': 'Notificación Webhook',
+        'totalcoin te avisa que el pago llegó': 'totalcoin te avisa que el pago llegó',
+        'Crear Pre-Orden con QR': 'Crear Pre-Orden con QR',
+        'Creas un pedido y totalcoin genera un código QR': 'Creas un pedido y totalcoin genera un código QR',
+        'Generar QR': 'Generar QR',
+        'totalcoin te da un código QR para el pago': 'totalcoin te da un código QR para el pago',
+        'Generar Código QR': 'Generar Código QR',
+        'totalcoin crea automáticamente el código QR': 'totalcoin crea automáticamente el código QR',
+        'Usuario Escanea QR': 'Usuario Escanea QR',
+        'Tu cliente escanea el QR y realiza el pago': 'Tu cliente escanea el QR y realiza el pago',
+        'Tu cliente escanea el QR y paga desde su celular': 'Tu cliente escanea el QR y paga desde su celular',
+        'Procesamiento y Notificación': 'Procesamiento y Notificación',
+        'totalcoin procesa el pago y te avisa': 'totalcoin procesa el pago y te avisa',
+        'totalcoin te confirma que el pago se realizó': 'totalcoin te confirma que el pago se realizó',
+        'Configurar Webhook': 'Configurar Webhook',
+        'Le informas a totalcoin dónde enviarte las notificaciones': 'Le informas a totalcoin dónde enviarte las notificaciones',
+        'Evento Ocurre': 'Evento Ocurre',
+        'Se completa un pago o cambia el estado de una transacción': 'Se completa un pago o cambia el estado de una transacción',
+        'Evento de Pago': 'Evento de Pago',
+        'Sucede algo importante (pago exitoso o fallido)': 'Sucede algo importante (pago exitoso o fallido)',
+        'totalcoin Prepara Notificación': 'totalcoin Prepara Notificación',
+        'totalcoin arma la información del evento': 'totalcoin arma la información del evento',
+        'Envío de Webhook': 'Envío de Webhook',
+        'totalcoin envía la notificación a tu servidor': 'totalcoin envía la notificación a tu servidor',
+        'totalcoin Envía Webhook': 'totalcoin Envía Webhook',
+        'totalcoin te manda automáticamente la información': 'totalcoin te manda automáticamente la información',
+        'Tu Sistema Responde': 'Tu Sistema Responde',
+        'Tu servidor confirma que recibió la notificación': 'Tu servidor confirma que recibió la notificación',
+        'Realizar Pago': 'Realizar Pago',
+        'Le pedís a totalcoin que haga un pago': 'Le pedís a totalcoin que haga un pago',
+        'totalcoin revisa que todo esté bien y procesa': 'totalcoin revisa que todo esté bien y procesa',
+        'Respuesta': 'Respuesta',
+        'totalcoin envía el dinero al destinatario': 'totalcoin envía el dinero al destinatario',
+        'Notificación de Resultado': 'Notificación de Resultado'
+    },
+    en: {
+        // Navbar
+        'API Integration Flowchart': 'API Integration Flowchart',
+        'Flujograma Interactivo de Integraciones': 'Interactive Integration Flowchart',
+        
+        // Sidebar
+        'Tipos de Integración': 'Integration Types',
+        'Información': 'Information',
+        'Selecciona un tipo de integración para ver el flujo detallado.': 'Select an integration type to see the detailed flow.',
+        
+        // Animation section
+        '🎬 Visualización Animada': '🎬 Animated Visualization',
+        'Ver Flujo del Dinero': 'View Money Flow',
+        
+        // Documentation
+        'Documentación Técnica': 'Technical Documentation',
+        '📄 Conciliación Automática': '📄 Automatic Reconciliation',
+        '📄 Pre-órdenes con QR': '📄 QR Pre-orders',
+        '📄 Notificaciones Webhook': '📄 Webhook Notifications',
+        '📄 Realizar Pagos': '📄 Make Payments',
+        
+        // Botones principales
+        'Ver Documentación Completa': 'View Complete Documentation',
+        'Animación interactiva': 'Interactive animation',
+        
+        // Títulos de flujos
+        'Cashin - Conciliación Automática': 'Cashin - Automatic Reconciliation',
+        'Cashin - Pre-órdenes con QR': 'Cashin - QR Pre-orders',
+        'Notificaciones Webhook': 'Webhook Notifications',
+        'Cashout - Realizar Pagos': 'Cashout - Make Payments',
+        
+        // Controles de animación
+        'Flujo del Dinero - Visualización Animada': 'Money Flow - Animated Visualization',
+        'Selecciona un flujo:': 'Select a flow:',
+        'Velocidad:': 'Speed:',
+        '▶️ Reproducir': '▶️ Play',
+        '⏸️ Pausar': '⏸️ Pause',
+        '🔄 Reiniciar': '🔄 Reset',
+        '▶️ Reanudar': '▶️ Resume',
+        
+        // Elementos del sistema
+        'Tu Sistema': 'Your System',
+        'totalcoin': 'totalcoin',
+        'Usuario Final': 'End User',
+        'Sistema Bancario': 'Banking System',
+        
+        // Timeline
+        'Autenticación': 'Authentication',
+        'Crear Pre-orden': 'Create Pre-order',
+        'Pago Usuario': 'User Payment',
+        'Procesamiento': 'Processing',
+        'Notificación': 'Notification',
+        
+        // Información de pasos
+        'Información del Paso Actual': 'Current Step Information',
+        'Selecciona un flujo y presiona reproducir para ver la animación del movimiento del dinero.': 'Select a flow and press play to see the money flow animation.',
+        
+        // Notificaciones
+        'Notificación enviada': 'Notification sent',
+        'Procesando...': 'Processing...',
+        '¡Animación Completada!': 'Animation Completed!',
+        'El flujo de dinero ha sido procesado exitosamente.': 'The money flow has been processed successfully.',
+        
+        // Pasos de diagramas de flujo
+        'Inicias sesión con tu usuario y contraseña': 'You log in with your username and password',
+        'Crear Pre-Orden': 'Create Pre-Order',
+        'Le informas a totalcoin que vas a recibir un pago': 'You inform totalcoin that you will receive a payment',
+        'Usuario Realiza Pago': 'User Makes Payment',
+        'Tu cliente paga con transferencia, QR o tarjeta': 'Your client pays with transfer, QR or card',
+        'Conciliación Automática': 'Automatic Reconciliation',
+        'totalcoin encuentra y confirma el pago automáticamente': 'totalcoin finds and confirms the payment automatically',
+        'Notificación Webhook': 'Webhook Notification',
+        'totalcoin te avisa que el pago llegó': 'totalcoin notifies you that the payment arrived',
+        'Crear Pre-Orden con QR': 'Create Pre-Order with QR',
+        'Creas un pedido y totalcoin genera un código QR': 'You create an order and totalcoin generates a QR code',
+        'Generar QR': 'Generate QR',
+        'totalcoin te da un código QR para el pago': 'totalcoin gives you a QR code for payment',
+        'Generar Código QR': 'Generate QR Code',
+        'totalcoin crea automáticamente el código QR': 'totalcoin automatically creates the QR code',
+        'Usuario Escanea QR': 'User Scans QR',
+        'Tu cliente escanea el QR y realiza el pago': 'Your client scans the QR and makes the payment',
+        'Tu cliente escanea el QR y paga desde su celular': 'Your client scans the QR and pays from their phone',
+        'Procesamiento y Notificación': 'Processing and Notification',
+        'totalcoin procesa el pago y te avisa': 'totalcoin processes the payment and notifies you',
+        'totalcoin te confirma que el pago se realizó': 'totalcoin confirms that the payment was made',
+        'Configurar Webhook': 'Configure Webhook',
+        'Le informas a totalcoin dónde enviarte las notificaciones': 'You inform totalcoin where to send you notifications',
+        'Evento Ocurre': 'Event Occurs',
+        'Se completa un pago o cambia el estado de una transacción': 'A payment is completed or a transaction status changes',
+        'Evento de Pago': 'Payment Event',
+        'Sucede algo importante (pago exitoso o fallido)': 'Something important happens (successful or failed payment)',
+        'totalcoin Prepara Notificación': 'totalcoin Prepares Notification',
+        'totalcoin arma la información del evento': 'totalcoin assembles the event information',
+        'Envío de Webhook': 'Webhook Sending',
+        'totalcoin envía la notificación a tu servidor': 'totalcoin sends the notification to your server',
+        'totalcoin Envía Webhook': 'totalcoin Sends Webhook',
+        'totalcoin te manda automáticamente la información': 'totalcoin automatically sends you the information',
+        'Tu Sistema Responde': 'Your System Responds',
+        'Tu servidor confirma que recibió la notificación': 'Your server confirms that it received the notification',
+        'Realizar Pago': 'Make Payment',
+        'Le pedís a totalcoin que haga un pago': 'You ask totalcoin to make a payment',
+        'totalcoin revisa que todo esté bien y procesa': 'totalcoin checks that everything is correct and processes',
+        'Respuesta': 'Response',
+        'totalcoin envía el dinero al destinatario': 'totalcoin sends the money to the recipient',
+        'Notificación de Resultado': 'Result Notification'
+    }
+};
+
+// Traducciones para integrationInfo
+const integrationInfoTranslations = {
+    es: integrationInfo,
+    en: {
+        'cashin-auto': {
+            title: 'Cashin - Automatic Reconciliation',
+            description: 'This flow details the integration process for cashin with automatic reconciliation, allowing <strong>totalcoin</strong> clients to receive payments that are automatically reconciled with their pre-orders.',
+            features: [
+                'Automatic payment reconciliation',
+                'Pre-order management',
+                'Webhook notifications',
+                'Support for multiple payment methods'
+            ],
+            endpoints: [
+                'POST /api/auth/login',
+                'POST /api/conciliacionAutomaticaV2/cashRequest'
+            ]
+        },
+        'cashin-qr': {
+            title: 'Cashin - QR Pre-orders',
+            description: 'This flow describes the integration of QR pre-orders, where <strong>totalcoin</strong> generates a QR code for each pre-order, facilitating user payment and subsequent automatic reconciliation.',
+            features: [
+                'Automatic QR code generation',
+                'Static and dynamic QR codes',
+                'Fixed or variable amount configuration',
+                'Real-time order tracking',
+                'Configurable QR expiration'
+            ],
+            endpoints: [
+                'POST /api/auth/login - Authentication',
+                'POST /api/iep/pre-order - Create QR pre-order'
+            ]
+        },
+        'webhook': {
+            title: 'Webhook Notifications',
+            description: 'This flow explains how <strong>totalcoin</strong> sends automatic notifications to your system (webhooks) about important events like completed or failed payments, ensuring your platform stays synchronized.',
+            features: [
+                'Real-time notifications',
+                'Bank transfer support',
+                'QR payment support',
+                'Debit/credit card support',
+                'Detailed payment information'
+            ],
+            endpoints: [
+                'Client-configured webhook',
+                'Receives POST notifications with payment data'
+            ]
+        },
+        'cashout': {
+            title: 'Cashout - Make Payments',
+            description: 'This flow details the process for making payments through the <strong>totalcoin</strong> API, allowing your system to initiate and manage money transfers programmatically.',
+            features: [
+                'CBU/CVU payments',
+                'Alias payments',
+                'Result notifications',
+                'Transaction tracking',
+                'Integration with Argentine banking system'
+            ],
+            endpoints: [
+                'POST /api/auth/login - Authentication',
+                'POST /api/payments/transactions - Make payment'
+            ]
+        }
+    }
+};
+
+// Traducciones para stepDetails
+const stepDetailsTranslations = {
+    es: stepDetails,
+    en: {
+        'cashin-auto': {
+            1: {
+                title: 'OAuth 2.0 Authentication',
+                description: 'The first step is to authenticate using credentials provided by totalcoin support department.',
+                technical: {
+                    method: 'POST',
+                    endpoint: '/api/auth/login',
+                    headers: {'Content-Type': 'application/json'},
+                    body: {username: 'your_username', password: 'your_password'},
+                    response: {token: 'jwt_token', expires_in: 3600}
+                },
+                notes: 'The token must be included in all subsequent requests as Bearer Token.'
+            },
+            2: {
+                title: 'Create Pre-Order',
+                description: 'A pre-order is created to notify totalcoin about a possible future payment.',
+                technical: {
+                    method: 'POST',
+                    endpoint: '/api/conciliacionAutomaticaV2/cashRequest',
+                    headers: {'Authorization': 'Bearer {token}', 'Content-Type': 'application/json'},
+                    body: {
+                        OperationId: 'UNIQUE_OPERATION_ID',
+                        Amount: 1000,
+                        DNI: '12345678',
+                        CompanyReferenceToConciliate: ''
+                    },
+                    response: 'true/false'
+                },
+                notes: 'CompanyReferenceToConciliate must be empty in the pre-order.'
+            },
+            3: {
+                title: 'User Makes Payment',
+                description: 'The end user makes the payment using any of the supported methods.',
+                technical: {
+                    methods: ['Bank transfer (CBU/CVU)', 'QR payment', 'Debit/credit card'],
+                    detection: 'Automatic by totalcoin systems'
+                },
+                notes: 'totalcoin automatically detects the payment in its systems.'
+            },
+            4: {
+                title: 'Automatic Reconciliation',
+                description: 'totalcoin processes the received payment and automatically reconciles it with the pre-order.',
+                technical: {
+                    process: 'Automatic matching by amount and DNI',
+                    timing: 'Real-time or near real-time',
+                    result: 'Payment linked to pre-order'
+                },
+                notes: 'This process is completely automatic and transparent to the client.'
+            },
+            5: {
+                title: 'Webhook Notification',
+                description: 'Once the payment is reconciled, totalcoin sends a notification to the configured webhook.',
+                technical: {
+                    method: 'POST',
+                    content: 'Payment details and reconciliation info',
+                    retry: 'Automatic retries on failure'
+                },
+                notes: 'Client must respond with HTTP 200 to confirm receipt.'
+            }
+        }
+        // Agregar más traducciones según sea necesario
+    }
+};
+
+// Clase para manejar las traducciones
+class LanguageManager {
+    constructor() {
+        this.currentLanguage = 'es';
+        this.init();
+    }
+    
+    init() {
+        const toggleBtn = document.getElementById('language-toggle');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => this.toggleLanguage());
+            // Establecer texto inicial del botón
+            this.updateButton();
+        }
+    }
+    
+    toggleLanguage() {
+        this.currentLanguage = this.currentLanguage === 'es' ? 'en' : 'es';
+        this.updateUI();
+        this.updateButton();
+        
+        // Actualizar la información de integración si existe una instancia de animación
+        if (window.moneyFlowAnimation) {
+            window.moneyFlowAnimation.updateLanguage(this.currentLanguage);
+        }
+        
+        // Actualizar información del panel
+        if (window.flowchartManager) {
+            window.flowchartManager.updateInfoPanel();
+        }
+    }
+    
+    updateButton() {
+        const toggleBtn = document.getElementById('language-toggle');
+        if (toggleBtn) {
+            toggleBtn.textContent = this.currentLanguage === 'es' ? 'English' : 'Español';
+        }
+    }
+    
+    updateUI() {
+        const currentTranslations = translations[this.currentLanguage];
+        
+        // Actualizar todos los elementos con data-translate
+        document.querySelectorAll('[data-translate]').forEach(element => {
+            const key = element.getAttribute('data-translate');
+            if (currentTranslations[key]) {
+                if (element.tagName === 'OPTION') {
+                    element.textContent = currentTranslations[key];
+                } else {
+                    element.textContent = currentTranslations[key];
+                }
+            }
+        });
+        
+        // Actualizar botones de integración
+        this.updateIntegrationButtons(currentTranslations);
+        
+        // Actualizar elementos específicos por ID o clase
+        this.updateSpecificElements(currentTranslations);
+    }
+    
+    updateIntegrationButtons(translations) {
+        const buttons = document.querySelectorAll('.integration-btn');
+        buttons.forEach(btn => {
+            const flow = btn.getAttribute('data-flow');
+            const flowInfo = integrationInfoTranslations[this.currentLanguage][flow];
+            if (flowInfo) {
+                btn.textContent = flowInfo.title;
+            }
+        });
+    }
+    
+    updateSpecificElements(translations) {
+        // Actualizar elementos select
+        const flowSelector = document.getElementById('flow-selector');
+        if (flowSelector) {
+            const options = flowSelector.querySelectorAll('option');
+            options.forEach(option => {
+                const flow = option.value;
+                const flowInfo = integrationInfoTranslations[this.currentLanguage][flow];
+                if (flowInfo) {
+                    option.textContent = flowInfo.title;
+                }
+            });
+        }
+        
+        // Actualizar controles de velocidad
+        const speedLabel = document.getElementById('speed-label');
+        if (speedLabel) {
+            const speedMatch = speedLabel.textContent.match(/[\d\.]+/);
+            const currentSpeed = speedMatch ? speedMatch[0] : '1';
+            speedLabel.textContent = `${translations['Velocidad:'] || 'Velocidad:'} ${currentSpeed}x`;
+        }
+        
+        // Actualizar botones de control
+        const playBtn = document.getElementById('play-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        
+        if (playBtn) {
+            const isResuming = playBtn.textContent.includes('Reanudar') || playBtn.textContent.includes('Resume');
+            playBtn.textContent = isResuming ? 
+                (translations['▶️ Reanudar'] || '▶️ Reanudar') : 
+                (translations['▶️ Reproducir'] || '▶️ Reproducir');
+        }
+        
+        if (pauseBtn && translations['⏸️ Pausar']) {
+            pauseBtn.textContent = translations['⏸️ Pausar'];
+        }
+        
+        if (resetBtn && translations['🔄 Reiniciar']) {
+            resetBtn.textContent = translations['🔄 Reiniciar'];
+        }
+        
+        // Actualizar títulos de sección principales
+        const animationTitle = document.querySelector('h2[data-translate="Flujo del Dinero - Visualización Animada"]');
+        if (animationTitle && translations['Flujo del Dinero - Visualización Animada']) {
+            animationTitle.innerHTML = `💰 ${translations['Flujo del Dinero - Visualización Animada']}`;
+        }
+        
+        // Actualizar elementos del sistema
+        const systemElements = {
+            'Tu Sistema': document.querySelector('.system-element[data-translate="Tu Sistema"] .system-label'),
+            'totalcoin': document.querySelector('.system-element[data-translate="totalcoin"] .system-label'),
+            'Usuario Final': document.querySelector('.system-element[data-translate="Usuario Final"] .system-label'),
+            'Sistema Bancario': document.querySelector('.system-element[data-translate="Sistema Bancario"] .system-label')
+        };
+        
+        Object.entries(systemElements).forEach(([key, element]) => {
+            if (element && translations[key]) {
+                element.textContent = translations[key];
+            }
+        });
+        
+        // Actualizar timeline labels
+        const timelineLabels = document.querySelectorAll('.timeline-label');
+        timelineLabels.forEach(label => {
+            const key = label.getAttribute('data-translate');
+            if (key && translations[key]) {
+                label.textContent = translations[key];
+            }
+        });
+    }
+    
+    translate(key) {
+        return translations[this.currentLanguage][key] || key;
+    }
+    
+    getIntegrationInfo() {
+        return integrationInfoTranslations[this.currentLanguage];
+    }
+    
+    getStepDetails() {
+        return stepDetailsTranslations[this.currentLanguage];
+    }
+}
+
+// Extender MoneyFlowAnimation para soportar traducciones
+if (typeof MoneyFlowAnimation !== 'undefined') {
+    MoneyFlowAnimation.prototype.updateLanguage = function(language) {
+        this.currentLanguage = language;
+        
+        // Actualizar información del flujo actual
+        if (this.currentFlow) {
+            this.updateInfoSection();
+        }
+    };
+    
+    // Sobrescribir el método updateInfoSection para usar traducciones
+    const originalUpdateInfoSection = MoneyFlowAnimation.prototype.updateInfoSection;
+    MoneyFlowAnimation.prototype.updateInfoSection = function() {
+        const infoSection = document.getElementById('animation-info');
+        if (!infoSection) return;
+        
+        const language = window.languageManager ? window.languageManager.currentLanguage : 'es';
+        const flowInfo = integrationInfoTranslations[language][this.currentFlow];
+        const steps = this.flowSteps[this.currentFlow];
+        
+        const stepsTitle = language === 'en' ? 'Process steps:' : 'Pasos del proceso:';
+        
+        infoSection.innerHTML = `
+            <h4>${flowInfo.title}</h4>
+            <p>${flowInfo.description}</p>
+            <div class="steps-preview">
+                <h5>${stepsTitle}</h5>
+                <ol>
+                    ${steps.map(step => `<li>${step.name}</li>`).join('')}
+                </ol>
+            </div>
+        `;
+    };
+}
+
+// Inicializar la animación y el gestor de idiomas cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
+    // Inicializar gestor de idiomas
+    window.languageManager = new LanguageManager();
+    
     // Esperar un poco para asegurar que otros elementos estén inicializados
     setTimeout(() => {
         window.moneyFlowAnimation = new MoneyFlowAnimation();

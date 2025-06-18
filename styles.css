@@ -291,8 +291,9 @@ body {
 
 .step-number {
     position: absolute;
-    top: -8px;
-    left: 20px;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
     background: linear-gradient(135deg, #F37D3D 0%, #ff6b35 100%);
     color: white;
     width: 35px;

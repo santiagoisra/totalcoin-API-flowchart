@@ -365,27 +365,56 @@ class FlowchartManager {
 
     showStepDetails(stepElement) {
         const stepNumber = stepElement.dataset.step;
-        const stepInfo = stepDetails[this.currentFlow][stepNumber];
+        const language = window.languageManager ? window.languageManager.currentLanguage : 'es';
+        const stepInfo = stepDetailsTranslations[language][this.currentFlow][stepNumber];
         
         if (!stepInfo) return;
+
+        // Traducciones para las etiquetas técnicas
+        const labels = {
+            es: {
+                technicalDetails: 'Detalles Técnicos:',
+                method: 'Método:',
+                endpoint: 'Endpoint:',
+                headers: 'Headers:',
+                body: 'Body:',
+                response: 'Response:',
+                supportedMethods: 'Métodos Soportados:',
+                technicalInfo: 'Información Técnica:',
+                note: 'Nota:'
+            },
+            en: {
+                technicalDetails: 'Technical Details:',
+                method: 'Method:',
+                endpoint: 'Endpoint:',
+                headers: 'Headers:',
+                body: 'Body:',
+                response: 'Response:',
+                supportedMethods: 'Supported Methods:',
+                technicalInfo: 'Technical Information:',
+                note: 'Note:'
+            }
+        };
+
+        const currentLabels = labels[language];
 
         let technicalContent = '';
         if (stepInfo.technical) {
             if (stepInfo.technical.method && stepInfo.technical.endpoint) {
                 technicalContent += `
                     <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
-                        <h6 style="color: #003E70; margin-bottom: 0.5rem;">Detalles Técnicos:</h6>
-                        <p><strong>Método:</strong> ${stepInfo.technical.method}</p>
-                        <p><strong>Endpoint:</strong> <code>${stepInfo.technical.endpoint}</code></p>
-                        ${stepInfo.technical.headers ? `<p><strong>Headers:</strong> <code>${JSON.stringify(stepInfo.technical.headers)}</code></p>` : ''}
-                        ${stepInfo.technical.body ? `<p><strong>Body:</strong></p><pre style="background: white; padding: 0.5rem; border-radius: 4px; overflow-x: auto;"><code>${JSON.stringify(stepInfo.technical.body, null, 2)}</code></pre>` : ''}
-                        ${stepInfo.technical.response ? `<p><strong>Response:</strong> <code>${typeof stepInfo.technical.response === 'object' ? JSON.stringify(stepInfo.technical.response) : stepInfo.technical.response}</code></p>` : ''}
+                        <h6 style="color: #003E70; margin-bottom: 0.5rem;">${currentLabels.technicalDetails}</h6>
+                        <p><strong>${currentLabels.method}</strong> ${stepInfo.technical.method}</p>
+                        <p><strong>${currentLabels.endpoint}</strong> <code>${stepInfo.technical.endpoint}</code></p>
+                        ${stepInfo.technical.headers ? `<p><strong>${currentLabels.headers}</strong> <code>${JSON.stringify(stepInfo.technical.headers)}</code></p>` : ''}
+                        ${stepInfo.technical.body ? `<p><strong>${currentLabels.body}</strong></p><pre style="background: white; padding: 0.5rem; border-radius: 4px; overflow-x: auto;"><code>${JSON.stringify(stepInfo.technical.body, null, 2)}</code></pre>` : ''}
+                        ${stepInfo.technical.response ? `<p><strong>${currentLabels.response}</strong> <code>${typeof stepInfo.technical.response === 'object' ? JSON.stringify(stepInfo.technical.response) : stepInfo.technical.response}</code></p>` : ''}
                     </div>
                 `;
             } else if (stepInfo.technical.methods) {
                 technicalContent += `
                     <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
-                        <h6 style="color: #003E70; margin-bottom: 0.5rem;">Métodos Soportados:</h6>
+                        <h6 style="color: #003E70; margin-bottom: 0.5rem;">${currentLabels.supportedMethods}</h6>
                         <ul>
                             ${stepInfo.technical.methods.map(method => `<li>${method}</li>`).join('')}
                         </ul>
@@ -394,7 +423,7 @@ class FlowchartManager {
             } else {
                 technicalContent += `
                     <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
-                        <h6 style="color: #003E70; margin-bottom: 0.5rem;">Información Técnica:</h6>
+                        <h6 style="color: #003E70; margin-bottom: 0.5rem;">${currentLabels.technicalInfo}</h6>
                         ${Object.entries(stepInfo.technical).map(([key, value]) => {
                             if (Array.isArray(value)) {
                                 return `<p><strong>${key}:</strong></p><ul>${value.map(item => `<li>${item}</li>`).join('')}</ul>`;
@@ -410,7 +439,7 @@ class FlowchartManager {
             <h3 style="color: #003E70; margin-bottom: 1rem;">${stepInfo.title}</h3>
             <p style="margin-bottom: 1rem; line-height: 1.6;">${stepInfo.description}</p>
             ${technicalContent}
-            ${stepInfo.notes ? `<div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 1rem; border-radius: 8px; margin-top: 1rem;"><strong>Nota:</strong> ${stepInfo.notes}</div>` : ''}
+            ${stepInfo.notes ? `<div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 1rem; border-radius: 8px; margin-top: 1rem;"><strong>${currentLabels.note}</strong> ${stepInfo.notes}</div>` : ''}
         `;
         
         this.modal.style.display = 'block';
@@ -1091,6 +1120,14 @@ const translations = {
         '¡Animación Completada!': '¡Animación Completada!',
         'El flujo de dinero ha sido procesado exitosamente.': 'El flujo de dinero ha sido procesado exitosamente.',
         
+        // Elementos faltantes
+        'Canales: Transferencia bancaria, QR, Tarjeta': 'Canales: Transferencia bancaria, QR, Tarjeta',
+        'Velocidad: 1x': 'Velocidad: 1x',
+        'Cashin - Conciliación Automática': 'Cashin - Conciliación Automática',
+        'Cashin - Pre-órdenes con QR': 'Cashin - Pre-órdenes con QR',
+        'Notificaciones Webhook': 'Notificaciones Webhook',
+        'Cashout - Realizar Pagos': 'Cashout - Realizar Pagos',
+        
         // Pasos de diagramas de flujo
         'Inicias sesión con tu usuario y contraseña': 'Inicias sesión con tu usuario y contraseña',
         'Crear Pre-Orden': 'Crear Pre-Orden',
@@ -1196,6 +1233,14 @@ const translations = {
         'Procesando...': 'Processing...',
         '¡Animación Completada!': 'Animation Completed!',
         'El flujo de dinero ha sido procesado exitosamente.': 'The money flow has been processed successfully.',
+        
+        // Elementos faltantes
+        'Canales: Transferencia bancaria, QR, Tarjeta': 'Channels: Bank transfer, QR, Card',
+        'Velocidad: 1x': 'Speed: 1x',
+        'Cashin - Conciliación Automática': 'Cashin - Automatic Reconciliation',
+        'Cashin - Pre-órdenes con QR': 'Cashin - QR Pre-orders',
+        'Notificaciones Webhook': 'Webhook Notifications',
+        'Cashout - Realizar Pagos': 'Cashout - Make Payments',
         
         // Pasos de diagramas de flujo
         'Inicias sesión con tu usuario y contraseña': 'You log in with your username and password',
@@ -1347,7 +1392,7 @@ const stepDetailsTranslations = {
                 description: 'The end user makes the payment using any of the supported methods.',
                 technical: {
                     methods: ['Bank transfer (CBU/CVU)', 'QR payment', 'Debit/credit card'],
-                    detection: 'Automatic by totalcoin systems'
+                    process: 'User uses their banking app or wallet to make the payment'
                 },
                 notes: 'totalcoin automatically detects the payment in its systems.'
             },
@@ -1355,9 +1400,9 @@ const stepDetailsTranslations = {
                 title: 'Automatic Reconciliation',
                 description: 'totalcoin processes the received payment and automatically reconciles it with the pre-order.',
                 technical: {
-                    process: 'Automatic matching by amount and DNI',
-                    timing: 'Real-time or near real-time',
-                    result: 'Payment linked to pre-order'
+                    process: 'totalcoin internal system',
+                    matching: 'Amount, DNI and other data are used for matching',
+                    validation: 'All data is validated before confirming reconciliation'
                 },
                 notes: 'This process is completely automatic and transparent to the client.'
             },
@@ -1366,13 +1411,159 @@ const stepDetailsTranslations = {
                 description: 'Once the payment is reconciled, totalcoin sends a notification to the configured webhook.',
                 technical: {
                     method: 'POST',
-                    content: 'Payment details and reconciliation info',
-                    retry: 'Automatic retries on failure'
+                    endpoint: 'CLIENT_WEBHOOK_URL',
+                    payload: 'Complete processed payment information'
                 },
                 notes: 'Client must respond with HTTP 200 to confirm receipt.'
             }
+        },
+        'cashin-qr': {
+            1: {
+                title: 'OAuth 2.0 Authentication',
+                description: 'Initial authentication to access the QR pre-orders API.',
+                technical: {
+                    method: 'POST',
+                    endpoint: '/api/auth/login',
+                    domain: 'https://apicobranzastest.totalcoin.com (test) / https://apicobranzas.totalcoin.com (prod)'
+                },
+                notes: 'Credentials must be requested from the technical department.'
+            },
+            2: {
+                title: 'Create QR Pre-Order',
+                description: 'A pre-order is created that automatically generates a QR code for payment.',
+                technical: {
+                    method: 'POST',
+                    endpoint: '/api/iep/pre-order',
+                    qrTypes: ['static - reusable QR', 'dynamic - single-use QR'],
+                    amountTypes: ['closed - fixed amount', 'open - variable amount']
+                },
+                notes: 'QR can be configured to reset after each successful payment.'
+            },
+            3: {
+                title: 'Generate QR Code',
+                description: 'The system automatically generates the QR code based on pre-order parameters.',
+                technical: {
+                    format: 'Standard QR Code',
+                    content: 'Encoded payment information',
+                    expiration: 'Configurable according to expirationDate'
+                },
+                notes: 'The QR contains all necessary information for payment.'
+            },
+            4: {
+                title: 'User Scans QR',
+                description: 'The end user scans the QR code with their preferred payment application.',
+                technical: {
+                    apps: ['Banking applications', 'Digital wallets', 'Payment apps'],
+                    process: 'Automatic scanning of payment data'
+                },
+                notes: 'The process is intuitive and familiar to users.'
+            },
+            5: {
+                title: 'Processing and Notification',
+                description: 'totalcoin processes the payment and sends corresponding notifications.',
+                technical: {
+                    processing: 'Payment validation and processing',
+                    notification: 'Webhook to client with payment details'
+                },
+                notes: 'Reconciliation information is included in the notification.'
+            }
+        },
+        'webhook': {
+            1: {
+                title: 'Webhook Configuration',
+                description: 'The client must provide a secure URL where they will receive notifications.',
+                technical: {
+                    requirements: ['HTTPS URL', 'POST Endpoint', 'HTTP 200 Response'],
+                    security: 'Secure channel to provide the URL'
+                },
+                notes: 'The URL must be available 24/7 to receive notifications.'
+            },
+            2: {
+                title: 'Payment Received',
+                description: 'totalcoin receives a payment through any of its supported channels.',
+                technical: {
+                    channels: [
+                        'Bank transfer (CBU/CVU)',
+                        'QR payment',
+                        'Debit card',
+                        'Credit card'
+                    ]
+                },
+                notes: 'The system automatically detects the channel used.'
+            },
+            3: {
+                title: 'HTTP POST Call',
+                description: 'totalcoin sends a POST notification to the configured webhook with all payment details.',
+                technical: {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    payload: 'JSON with complete payment information'
+                },
+                notes: 'Includes amounts, dates, payment method and sender data.'
+            },
+            4: {
+                title: 'Client Processing',
+                description: 'The client receives and processes the notification according to their business logic.',
+                technical: {
+                    response: 'HTTP 200 to confirm receipt',
+                    processing: 'Client business logic',
+                    retry: 'totalcoin retries if no confirmation received'
+                },
+                notes: 'It is important to respond quickly to avoid retries.'
+            }
+        },
+        'cashout': {
+            1: {
+                title: 'OAuth 2.0 Authentication',
+                description: 'Authentication to access the outgoing payments API.',
+                technical: {
+                    method: 'POST',
+                    endpoint: '/api/auth/login',
+                    scope: 'Permissions to make payments'
+                },
+                notes: 'Special permissions are required to make payments.'
+            },
+            2: {
+                title: 'Make Payment',
+                description: 'The payment request is sent with recipient data.',
+                technical: {
+                    method: 'POST',
+                    endpoint: '/api/payments/transactions',
+                    options: ['CBU/CVU (22 digits)', 'Bank alias'],
+                    required: ['CUIT/CUIL', 'Amount', 'Reference', 'Notification URL']
+                },
+                notes: 'Must specify alias OR cbu/cvu, not both.'
+            },
+            3: {
+                title: 'Processing',
+                description: 'totalcoin processes the transfer through the Argentine banking system.',
+                technical: {
+                    validation: 'Bank data validation',
+                    processing: 'Sending through banking network',
+                    timing: 'Real-time or deferred processing'
+                },
+                notes: 'Timing depends on the receiving bank.'
+            },
+            4: {
+                title: 'Response',
+                description: 'The API returns a unique transaction ID for tracking.',
+                technical: {
+                    response: {id: 'transaction_unique_id'},
+                    status: 'Request receipt confirmation'
+                },
+                notes: 'The ID allows subsequent transaction tracking.'
+            },
+            5: {
+                title: 'Result Notification',
+                description: 'totalcoin notifies the final result of the transfer.',
+                technical: {
+                    method: 'POST',
+                    endpoint: 'provided notificationUrl',
+                    statuses: ['Successful', 'Rejected', 'Pending']
+                },
+                notes: 'The notification includes final status and additional details.'
+            }
         }
-        // Agregar más traducciones según sea necesario
     }
 };
 
